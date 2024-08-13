@@ -1,0 +1,22 @@
+#Make a distance map from the lesion mask
+
+module load Anaconda3/2024.02-1
+module load fsl/6.0.6
+
+eval "$(conda shell.bash hook)"
+conda activate BENCH
+
+sub_list="/well/miller/users/uai965/UKBB/Subjects_100/sub_list_100"
+core_path="/well/miller/users/uai965/UKBB/Subjects_100"
+MNI_path="/well/win/software/packages/fsl/6.0.6/data/standard/MNI152_T1_2mm.nii.gz"
+
+while read -r ID; do
+    lesion_mask="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_resampled.nii.gz"
+    output_dir="${core_path}/${ID}/T2_FLAIR/lesions/output"
+    
+    distancemap -i "${lesion_mask}" -o "${output_dir}/distance_map_lesion_mask_resampled.nii.gz"
+
+    echo "A distance map has been calculated from the lesion mask of $ID"
+done < "$sub_list"
+
+echo "A distance map has been calculated for all participants"
