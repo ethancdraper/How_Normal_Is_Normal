@@ -1,0 +1,32 @@
+#Remove LMs from spheres
+
+module load Anaconda3/2024.02-1
+module load fsl/6.0.6
+
+eval "$(conda shell.bash hook)"
+conda activate BENCH
+
+sub_list="/well/miller/users/uai965/UKBB/Subjects_100/sub_list_100"
+core_path="/well/miller/users/uai965/UKBB/Subjects_100"
+MNI_path="/well/win/software/packages/fsl/6.0.6/data/standard/MNI152_T1_2mm.nii.gz"
+
+while read -r ID; do
+    lesion_mask="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_resampled_bin.nii.gz"
+    output_dir="${core_path}/${ID}/T2_FLAIR/lesions/output"
+
+    fslmaths "${output_dir}/lesion_mask_resampled__sphere_2.nii.gz" -bin "${output_dir}/lesion_mask_resampled__sphere_2_bin.nii.gz"
+    fslmaths "${output_dir}/lesion_mask_resampled__sphere_5.nii.gz" -bin "${output_dir}/lesion_mask_resampled__sphere_5_bin.nii.gz"
+    fslmaths "${output_dir}/lesion_mask_resampled__sphere_8.nii.gz" -bin "${output_dir}/lesion_mask_resampled__sphere_8_bin.nii.gz"
+    fslmaths "${output_dir}/lesion_mask_resampled__sphere_10.nii.gz" -bin "${output_dir}/lesion_mask_resampled__sphere_10_bin.nii.gz"
+
+    fslmaths "${output_dir}/lesion_mask_resampled__sphere_2_bin.nii.gz" -sub "${lesion_mask}" "${output_dir}/lesion_mask_resampled__sphere_2_NL.nii.gz"
+    fslmaths "${output_dir}/lesion_mask_resampled__sphere_5_bin.nii.gz" -sub "${lesion_mask}" "${output_dir}/lesion_mask_resampled__sphere_5_NL.nii.gz"
+    fslmaths "${output_dir}/lesion_mask_resampled__sphere_8_bin.nii.gz" -sub "${lesion_mask}" "${output_dir}/lesion_mask_resampled__sphere_8_NL.nii.gz"
+    fslmaths "${output_dir}/lesion_mask_resampled__sphere_10_bin.nii.gz" -sub "${lesion_mask}" "${output_dir}/lesion_mask_resampled__sphere_10_NL.nii.gz"
+
+
+    echo "Sphere masks have been lesion extracted for ${ID}"
+
+    done < "$sub_list"
+
+echo "Sphere masks have been lesion extracted for all participants"
