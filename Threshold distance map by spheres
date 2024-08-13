@@ -1,0 +1,26 @@
+#Threshold distance map by spheres
+
+module load Anaconda3/2024.02-1
+module load fsl/6.0.6
+
+eval "$(conda shell.bash hook)"
+conda activate BENCH
+
+#Script to create a distance map of the distance from a WMH for each participant
+
+sub_list="/well/miller/users/uai965/UKBB/Subjects_100/sub_list_100"
+core_path="/well/miller/users/uai965/UKBB/Subjects_100"
+
+while read -r ID; do 
+    dist_lesion_mask="${core_path}/${ID}/T2_FLAIR/lesions/output/distance_map_lesion_mask_resampled.nii.gz"
+    output_dir="${core_path}/${ID}/T2_FLAIR/lesions/output"
+
+    fslmaths "${dist_lesion_mask}" -mas "${output_dir}/lesion_mask_resampled__sphere_2_NL.nii.gz" "${output_dir}/lesion_mask_resampled__sphere_2_NL_distance_mask.nii.gz"
+    fslmaths "${dist_lesion_mask}" -mas "${output_dir}/lesion_mask_resampled__sphere_5_NL.nii.gz" "${output_dir}/lesion_mask_resampled__sphere_5_NL_distance_mask.nii.gz"
+    fslmaths "${dist_lesion_mask}" -mas "${output_dir}/lesion_mask_resampled__sphere_8_NL.nii.gz" "${output_dir}/lesion_mask_resampled__sphere_8_NL_distance_mask.nii.gz"
+    fslmaths "${dist_lesion_mask}" -mas "${output_dir}/lesion_mask_resampled__sphere_10_NL.nii.gz" "${output_dir}/lesion_mask_resampled__sphere_10_NL_distance_mask.nii.gz"
+    
+    echo "A distance map has been thresholded for the spheres of $ID"
+done < "$sub_list"
+
+echo "A distance map has been thresholded for the spheres for all participants"
