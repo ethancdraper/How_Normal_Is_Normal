@@ -1,0 +1,27 @@
+#Extract the lesions from the ROIs to have a mask of NAWM per ROI
+
+module load Anaconda3/2024.02-1
+module load fsl/6.0.6
+
+eval "$(conda shell.bash hook)"
+conda activate BENCH
+
+sub_list="/well/miller/users/uai965/UKBB/Subjects_100/sub_list_100"
+core_path="/well/miller/users/uai965/UKBB/Subjects_100"
+JHU_ROI_Path="/well/miller/users/uai965/UKBB/ROIs_JHU"
+JHU_ROI_list="${JHU_ROI_Path}/ROI_JHU_List"
+MNI_path="/well/win/software/packages/fsl/6.0.6/data/standard/MNI152_T1_2mm.nii.gz"
+
+while read -r ID; do
+    output_dir="${core_path}/${ID}/T2_FLAIR/lesions/output"
+    
+    while read -r ROI; do
+        fslmaths "${output_dir}/${ID}_${ROI}_thresholded_output.nii.gz" -bin "${output_dir}/${ID}_${ROI}_thresholded_output_bin.nii.gz"
+        fslmaths "${output_dir}/${ROI}_resampled.nii.gz" -sub "${output_dir}/${ID}_${ROI}_thresholded_output_bin.nii.gz" "${output_dir}/${ROI}_NL.nii.gz"       
+
+    done < "$JHU_ROI_list"
+
+    echo "Lesions have been extracted for each WM ROI for ${ID}"
+done < "$sub_list"
+
+echo "Lesions have been extracted for each WM ROI for all participants"
