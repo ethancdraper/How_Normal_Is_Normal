@@ -12,7 +12,9 @@ while read -r ID; do
 
     fslmaths "${lesion_mask}" -kernel sphere 2 -fmean "${output_dir}/lesion_mask_resampled__sphere_2.nii.gz"
     fslmaths "${lesion_mask}" -kernel sphere 5 -fmean "${output_dir}/lesion_mask_resampled__sphere_5.nii.gz"
-    
+    fslmaths "${lesion_mask}" -kernel sphere 8 -fmean "${output_dir}/lesion_mask_resampled__sphere_8.nii.gz"
+    fslmaths "${lesion_mask}" -kernel sphere 10 -fmean "${output_dir}/lesion_mask_resampled__sphere_10.nii.gz"
+
     echo "Sphere masks have been made at 2mm and 5mm for ${ID}"
 
 
