@@ -1,0 +1,26 @@
+#Script to resample ROIs and extract a lesion mask for each ROI for each participant
+
+sub_list="/well/miller/users/uai965/UKBB/Subjects_100/sub_list_100"
+core_path="/well/miller/users/uai965/UKBB/Subjects_100"
+JHU_ROI_Path="/well/miller/users/uai965/UKBB/ROIs_JHU"
+JHU_ROI_list="${JHU_ROI_Path}/ROI_JHU_List"
+MNI_path="/well/win/software/packages/fsl/6.0.6/data/standard/MNI152_T1_2mm.nii.gz"
+
+while read -r ID; do
+    lesion_mask="${core_path}/${ID}/T2_FLAIR/lesions/final_mask_to_MNI.nii.gz"
+    output_dir="${core_path}/${ID}/T2_FLAIR/lesions/output"
+    
+    mkdir -p "$output_dir"
+
+    flirt -in "${lesion_mask}" -ref "${MNI_path}" -out "${output_dir}/lesion_mask_resampled.nii.gz" -applyisoxfm 2
+
+    while read -r ROI; do
+        ROI_file="${JHU_ROI_Path}/${ROI}.nii.gz"
+        flirt -in "${ROI_file}" -ref "${output_dir}/lesion_mask_resampled.nii.gz" -out "${output_dir}/${ROI}_resampled.nii.gz" -applyisoxfm 2
+        fslmaths "${output_dir}/lesion_mask_resampled.nii.gz" -mas "${output_dir}/${ROI}_resampled.nii.gz" "${output_dir}/${ID}_${ROI}_thresholded_output.nii.gz"
+    done < "$JHU_ROI_list"
+
+    echo "Lesion mask has been thresholded for all WM ROIs for $ID"
+done < "$sub_list"
+
+echo "Lesion mask has been thresholded for all ROIs for all participants"
