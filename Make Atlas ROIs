@@ -1,0 +1,15 @@
+#Script to make ROIs using fslmaths (only done once for the whole atlas, not subject-specific)
+
+ATLAS="/usr/local/fsl/data/atlases/JHU/JHU-ICBM-labels-2mm.nii.gz"
+
+THR_L=0.8
+THR_U=1.2
+
+while read -r ROI; do
+  fslmaths "$ATLAS" -thr "$THR_L" -uthr "$THR_U" -bin "$ROI"
+  echo "Created ROI: $ROI with thresholds -thr $THR_L -uthr $THR_U"
+  THR_L=$(echo "$THR_L + 1" | bc)
+  THR_U=$(echo "$THR_U + 1" | bc)
+done < "ROI_JHU_List"
+
+echo "ROIs have been created"
