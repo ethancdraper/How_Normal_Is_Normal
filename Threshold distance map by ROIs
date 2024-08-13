@@ -1,0 +1,26 @@
+#Threshold distance map by NAWM ROIs
+
+module load Anaconda3/2024.02-1
+module load fsl/6.0.6
+
+eval "$(conda shell.bash hook)"
+conda activate BENCH
+
+sub_list="/well/miller/users/uai965/UKBB/Subjects_100/sub_list_100"
+core_path="/well/miller/users/uai965/UKBB/Subjects_100"
+JHU_ROI_Path="/well/miller/users/uai965/UKBB/ROIs_JHU"
+JHU_ROI_list="${JHU_ROI_Path}/ROI_JHU_List"
+
+while read -r ID; do
+    dist_lesion_mask="${core_path}/${ID}/T2_FLAIR/lesions/output/distance_map_lesion_mask_resampled.nii.gz"
+    output_dir="${core_path}/${ID}/T2_FLAIR/lesions/output"
+    
+    mkdir -p "$output_dir"
+    
+    while read -r ROI; do
+        ROI_file="${output_dir}/${ROI}_NL.nii.gz"
+	fslmaths "${dist_lesion_mask}" -mas "${ROI_file}" "${output_dir}/${ROI}_NL_distance_map_thresholded_output.nii.gz"
+    done < "$JHU_ROI_list"
+    echo "All WM ROIs (after lesion extraction) have been masked by the distance map for ${ID}"
+done < "$sub_list"
+echo "All WM ROIs have been masked by the distance map for all participants"
