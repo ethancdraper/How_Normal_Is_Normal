@@ -1,0 +1,22 @@
+#Script to make lesion mask larger for each participant
+
+sub_list="/well/miller/users/uai965/UKBB/Subjects_100/sub_list_100"
+core_path="/well/miller/users/uai965/UKBB/Subjects_100"
+MNI_path="/well/win/software/packages/fsl/6.0.6/data/standard/MNI152_T1_2mm.nii.gz"
+
+
+while read -r ID; do
+    lesion_mask="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_resampled.nii.gz"
+    output_dir="${core_path}/${ID}/T2_FLAIR/lesions/output"
+
+
+    fslmaths "${lesion_mask}" -kernel sphere 2 -fmean "${output_dir}/lesion_mask_resampled__sphere_2.nii.gz"
+    fslmaths "${lesion_mask}" -kernel sphere 5 -fmean "${output_dir}/lesion_mask_resampled__sphere_5.nii.gz"
+    
+    echo "Sphere masks have been made at 2mm and 5mm for ${ID}"
+
+
+    done < "$sub_list"
+
+
+echo "A sphere mask has been made at 2mm and 5mm for all participants"
