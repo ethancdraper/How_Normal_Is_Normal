@@ -1,4 +1,4 @@
-#Script to make ROIs using fslmaths (only done once for the whole atlas, not subject-specific)
+#!/bin/bash
 
 ATLAS="/usr/local/fsl/data/atlases/JHU/JHU-ICBM-labels-2mm.nii.gz"
 
