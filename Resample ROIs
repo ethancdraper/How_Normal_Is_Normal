@@ -1,10 +1,11 @@
-#Script to resample ROIs and extract a lesion mask for each ROI for each participant
+#!/bin/bash
 
-sub_list="/well/miller/users/uai965/UKBB/Subjects_100/sub_list_100"
-core_path="/well/miller/users/uai965/UKBB/Subjects_100"
-JHU_ROI_Path="/well/miller/users/uai965/UKBB/ROIs_JHU"
+core_path="/path/to/project/directory"
+sub_list="${core_path}/sub_list"
+
+JHU_ROI_Path="/path/to/ROIs_JHU"
 JHU_ROI_list="${JHU_ROI_Path}/ROI_JHU_List"
-MNI_path="/well/win/software/packages/fsl/6.0.6/data/standard/MNI152_T1_2mm.nii.gz"
+MNI_path="/path/to/MNI152_T1_2mm.nii.gz"
 
 while read -r ID; do
     lesion_mask="${core_path}/${ID}/T2_FLAIR/lesions/final_mask_to_MNI.nii.gz"
