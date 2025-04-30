@@ -2,7 +2,6 @@
 
 core_path="/path/to/project/directory"
 sub_list="${core_path}/sub_list"
-MNI_path="/path/to/MNI152_T1_2mm.nii.gz"
 
 while read -r ID; do
     lesion_mask="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_resampled.nii.gz"
