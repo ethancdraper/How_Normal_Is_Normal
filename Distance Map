@@ -6,8 +6,8 @@ module load fsl/6.0.6
 eval "$(conda shell.bash hook)"
 conda activate BENCH
 
-sub_list="/well/miller/users/uai965/UKBB/Subjects_100/sub_list_100"
-core_path="/well/miller/users/uai965/UKBB/Subjects_100"
+core_path="/path/to/project/directory"
+sub_list="${core_path}/sub_list"
 MNI_path="/well/win/software/packages/fsl/6.0.6/data/standard/MNI152_T1_2mm.nii.gz"
 
 while read -r ID; do
