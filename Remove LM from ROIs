@@ -1,16 +1,12 @@
-#Extract the lesions from the ROIs to have a mask of NAWM per ROI
+#!/bin/bash
 
-module load Anaconda3/2024.02-1
 module load fsl/6.0.6
 
-eval "$(conda shell.bash hook)"
-conda activate BENCH
-
-sub_list="/well/miller/users/uai965/UKBB/Subjects_100/sub_list_100"
-core_path="/well/miller/users/uai965/UKBB/Subjects_100"
-JHU_ROI_Path="/well/miller/users/uai965/UKBB/ROIs_JHU"
+core_path="/path/to/project/directory"
+sub_list="${core_path}/sub_list"
+JHU_ROI_Path="/path/to/ROIs_JHU"
 JHU_ROI_list="${JHU_ROI_Path}/ROI_JHU_List"
-MNI_path="/well/win/software/packages/fsl/6.0.6/data/standard/MNI152_T1_2mm.nii.gz"
+MNI_path="/path/to/MNI152_T1_2mm.nii.gz"
 
 while read -r ID; do
     output_dir="${core_path}/${ID}/T2_FLAIR/lesions/output"
