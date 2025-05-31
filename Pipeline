@@ -1,0 +1,20 @@
+1. Copy data (../cp_400.sh)
+2. Ensure nodif is there (nodif)
+3. Ensure WMH mask is there (no_wmh)
+4. Register FLAIR to nodif (Reg)
+5. Make NAWM mask in nodif space (NAWM)
+6. FA/MD/RD/AD analysis (AD_WMH_NAWM.sh) and extract WMH vol (WMH_Vol)
+7. Make spherical masks (ROI_Sphere_Script_1_4.sh)
+8. Binarize spherical masks for WMH (Bin_ring.sh)
+9. Generate rings for spherical masks for WMH (Ring_Mask.sh)
+10. FA/MD/RD/AD analysis (AD_Sphere_Analysis.sh)
+11. NODDI analysis (ISOVF_WMH_NAWM.sh)
+12. NODDI spherical analysis (ICVF_Sphere_Analysis.sh)   
+12. Binarize XTRACT ROIs and threshold them (Bin_XTRACT.sh)
+13. Extract LM from ROIs (XTRACT.sh)
+14. Create NAWM ROIs 
+15. Extract deep vs peri WMH if desired (and then register and conduct the above analyses again for NAWM vs WMH but instead all WMH but deep vs peri)
+16. Invert the dMRI2stdviat1 warp (INVWARP)
+17. Apply inverted warp to get ROIs in dif space
+18. Extract DTI metrics from ROIs
+19. Extract NODDI metrics from ROIs
