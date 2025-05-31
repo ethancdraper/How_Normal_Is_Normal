@@ -1,0 +1,20 @@
+#!/bin/bash
+
+module load fsl/6.0.6
+
+core_path="/well/miller/users/uai965/UKBB/Subjects_400"
+sub_list="$core_path/G"
+
+while read -r ID; do
+
+	DIF2STD="$core_path/${ID}/dMRI/dMRI/dMRInative_viaT1_to_MNI_warp.nii.gz"
+	STD2DIF="$core_path/${ID}/dMRI/dMRI/std2diff_warp.nii.gz"
+	NODIF="$core_path/${ID}/dMRI/dMRI/nodif_brain.nii.gz"
+
+	invwarp -w "${DIF2STD}" -o "${STD2DIF}" -r "${NODIF}"
+
+	echo "Warp has been inverted"
+
+done < "$sub_list"
+
+echo "Done"
