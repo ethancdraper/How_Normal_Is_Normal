@@ -1,0 +1,37 @@
+#!/bin/bash
+
+#SBATCH --mem=16G
+#SBATCH --time=1:00:00
+
+module load fsl/6.0.6
+
+core_path="/well/miller/users/uai965/UKBB/Subjects_400"
+sub_list="$core_path/G"
+NAWM_Output="$core_path/DTI/NAWM_AD_Output_1_5.csv"
+
+echo "ID,AD_1,AD_2,AD_3,AD_4,AD_5" > "$NAWM_Output"
+
+while read -r ID; do
+
+    M1_0="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_1_0.nii.gz"
+    M2_1="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_2_1.nii.gz"
+    M3_12="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_3_12.nii.gz"
+    M4_123="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_4_123.nii.gz"
+    M5_1234="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_5_1234.nii.gz"
+
+    AD="${core_path}/${ID}/dMRI/dMRI/dti_L1.nii.gz"
+
+    # Extract mean AD values
+    AD_1=$(fslstats "${AD}" -k "${M1_0}" -M)
+    AD_2=$(fslstats "${AD}" -k "${M2_1}" -M)
+    AD_3=$(fslstats "${AD}" -k "${M3_12}" -M)
+    AD_4=$(fslstats "${AD}" -k "${M4_123}" -M)
+    AD_5=$(fslstats "${AD}" -k "${M5_1234}" -M)
+
+    echo "${ID},${AD_1},${AD_2},${AD_3},${AD_4},${AD_5}" >> "$NAWM_Output"
+
+    echo "NAWM AD at 1mm–5mm has been extracted for ${ID}"
+
+done < "$sub_list"
+
+echo "Done"
