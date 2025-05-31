@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#SBATCH --mem=4G
+#SBATCH --time=1:00:00
+
+core_path="/well/miller/users/uai965/UKBB/Subjects_400"
+sub_list="$core_path/G"
+OUTPUT="$core_path/WMH_Peri_Vol_Results.csv"
+OUTPUT_D="$core_path/WMH_Deep_Vol_Results.csv"
+
+echo "Subject,Peri_WMH_Vol" > "$OUTPUT"
+echo "Subject,Deep_WMH_Vol" > "$OUTPUT_D"
+
+while read ID; do
+
+	DW="$core_path/${ID}/T2_FLAIR/lesions/pwmh_dwmh_output/deepwm_map_10mm.nii.gz"
+	SW="$core_path/${ID}/T2_FLAIR/lesions/pwmh_dwmh_output/perivent_map_10mm.nii.gz"
+
+	DWV="$(fslstats "${DW}" -V | awk '{print $2}')"
+	SWV="$(fslstats "${SW}" -V | awk '{print $2}')"
+
+	echo "${ID},${DWV}" >> "$OUTPUT_D"
+	echo "${ID},${SWV}" >> "$OUTPUT"
+
+done < "$sub_list"
+
+echo "ID and WMH volume have been saved to $OUTPUT and $OUTPUT_D"
