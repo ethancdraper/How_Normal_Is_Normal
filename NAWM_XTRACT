@@ -1,0 +1,32 @@
+#!/bin/bash
+
+module load fsl/6.0.6
+
+core_path="/well/miller/users/uai965/UKBB/Subjects_400"
+sub_list="$core_path/G1_2"
+no_les_vol="${core_path}/NAWM_volumes_12.csv"
+
+echo "SubjectID,ROI,NAWM_Volume_mm3" > "$no_les_vol"
+
+XTRACT_ROI_list="/well/miller/users/uai965/UKBB/Subjects_100/XTRACT_List"
+
+while read -r ID; do
+	output_dir="${core_path}/${ID}/T2_FLAIR/lesions/output"
+
+    while read -r ROI; do
+	lesion_mask="${core_path}/${ID}/T2_FLAIR/lesions/output/WMH_in_${ROI}.nii.gz"
+	XTRACT_ROI_bin="$core_path/${ID}/dMRI/autoptx_preproc/tracts/${ROI}/tracts/tractsNorm_001_bin.nii.gz"
+
+        fslmaths "${XTRACT_ROI_bin}" -sub "${lesion_mask}" -bin "${output_dir}/NAWM_in_${ROI}.nii.gz"
+
+	echo "${ROI} has been masked to generate NAWM in ROI for ${ID}"
+
+        VOLUME=$(fslstats "${output_dir}/NAWM_in_${ROI}.nii.gz" -V | awk '{print $2}')
+        echo "${ID},${ROI},${VOLUME}" >> "$no_les_vol"
+
+    done < "$XTRACT_ROI_list"
+
+    echo "Lesion mask has been subtracted from all XTRACT ROIs for $ID"
+done < "$sub_list"
+
+echo "Lesion mask has been subtracted from all XTRACT ROIs for all participants"
