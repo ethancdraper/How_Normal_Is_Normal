@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#SBATCH --mem=4G
+#SBATCH --time=1:00:00
+
+core_path="/well/miller/users/uai965/UKBB/Subjects_400"
+sub_list="$core_path/G"
+OUTPUT="$core_path/DTI/WMH_Vol_Results.csv"
+
+echo "Subject,WMH_Vol" > $OUTPUT
+
+while read ID; do
+
+	WMH="$core_path/${ID}/T2_FLAIR/lesions/volume.txt"
+
+	echo "${ID},$(cat ${WMH})" >> $OUTPUT
+
+done < "$sub_list"
+
+echo "ID and WMH volume have been saved to $OUTPUT"
