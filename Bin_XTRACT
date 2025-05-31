@@ -1,0 +1,23 @@
+#!/bin/bash
+
+module load fsl/6.0.6
+
+core_path="/well/miller/users/uai965/UKBB/Subjects_400"
+sub_list="$core_path/G"
+
+XTRACT_ROI_list="/well/miller/users/uai965/UKBB/Subjects_100/XTRACT_List"
+
+while read -r ID; do    
+    while read -r ROI; do
+
+	XTRACT_ROI="$core_path/${ID}/dMRI/autoptx_preproc/tracts/${ROI}/tracts/tractsNorm.nii.gz"
+	XTRACT_ROI_bin="$core_path/${ID}/dMRI/autoptx_preproc/tracts/${ROI}/tracts/tractsNorm_001_bin.nii.gz"
+
+	fslmaths "${XTRACT_ROI}" -thr 0.01 -bin "${XTRACT_ROI_bin}"
+
+	echo "${ROI} has been masked to generate WMH in ROI for ${ID}"
+
+    done < "$XTRACT_ROI_list"
+done < "$sub_list"
+
+echo "Lesion mask has been thresholded for all XTRACT ROIs for all participants"
