@@ -1,0 +1,33 @@
+#!/bin/bash
+
+module load fsl/6.0.6
+
+core_path="/well/miller/users/uai965/UKBB/Subjects_400"
+sub_list="$core_path/G"
+les_vol="${core_path}/lesion_volumes.csv"
+
+echo "SubjectID,ROI,LesionVolume_mm3" > "$les_vol"
+
+XTRACT_ROI_list="/well/miller/users/uai965/UKBB/Subjects_100/XTRACT_List"
+
+while read -r ID; do
+	lesion_mask="${core_path}/${ID}/T2_FLAIR/lesions/final_mask_to_MNI.nii.gz"
+	output_dir="${core_path}/${ID}/T2_FLAIR/lesions/output"
+    
+    while read -r ROI; do
+
+	XTRACT_ROI_bin="$core_path/${ID}/dMRI/autoptx_preproc/tracts/${ROI}/tracts/tractsNorm_001_bin.nii.gz"
+
+        fslmaths "${lesion_mask}" -mas "${XTRACT_ROI_bin}" "${output_dir}/WMH_in_${ROI}.nii.gz"
+
+	echo "${ROI} has been masked to generate WMH in ROI for ${ID}"
+
+        VOLUME=$(fslstats "${output_dir}/WMH_in_${ROI}.nii.gz" -V | awk '{print $1 * $2}')
+        echo "${ID},${ROI},${VOLUME}" >> "$les_vol"
+
+    done < "$XTRACT_ROI_list"
+
+    echo "Lesion mask has been thresholded for all XTRACT ROIs for $ID"
+done < "$sub_list"
+
+echo "Lesion mask has been thresholded for all XTRACT ROIs for all participants"
