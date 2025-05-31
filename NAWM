@@ -1,0 +1,40 @@
+#!/bin/bash
+
+module load fsl/6.0.6
+
+core_path="/well/miller/users/uai965/UKBB/Subjects_400" 
+sub_list="${core_path}/G"
+
+while read -r ID; do
+
+	ERO_WM_Mask="${core_path}/${ID}/T1/T1_fast/WM_mask_ero.nii.gz"
+	NO_DIF="${core_path}/${ID}/dMRI/dMRI/nodif_brain.nii.gz"
+	ERO_WM_NO_DIF="${core_path}/${ID}/T1/T1_fast/ERO_WM_to_NO_DIF.nii.gz"
+	ERO_WM_NO_DIF_M="${core_path}/${ID}/T1/T1_fast/ERO_WM_to_NO_DIF.mat"
+	ERO_WM_NO_DIF_05="${core_path}/${ID}/T1/T1_fast/ERO_WM_to_NO_DIF_05.nii.gz"
+	WMH_NO_DIF_3="${core_path}/${ID}/T2_FLAIR/lesions/output/final_mask_no_diff_3.nii.gz"
+	WMH_NO_DIF_3_bin="${core_path}/${ID}/T2_FLAIR/lesions/output/final_mask_no_diff_3_bin.nii.gz"
+	NAWM="${core_path}/${ID}/T2_FLAIR/lesions/output/NAWM.nii.gz"
+	NAWM_bin="${core_path}/${ID}/T2_FLAIR/lesions/output/NAWM_bin.nii.gz"
+
+	if [ ! -d "$NAWM_bin" ]; then
+
+		flirt -in "${ERO_WM_Mask}" -ref "${NO_DIF}" -out "${ERO_WM_NO_DIF}" -omat "${ERO_WM_NO_DIF_M}" -dof 6
+
+		fslmaths "${ERO_WM_NO_DIF}" -thr 0.5 "${ERO_WM_NO_DIF_05}"
+
+		fslmaths "${WMH_NO_DIF_3}" -bin "${WMH_NO_DIF_3_bin}"
+
+		fslmaths "${ERO_WM_NO_DIF_05}" -sub "${WMH_NO_DIF_3_bin}" "${NAWM}"
+
+		fslmaths "${NAWM}" -bin "${NAWM_bin}"
+
+		echo "WMH has been moved and thresholded for ${ID}"
+
+	else
+		echo "$NAWM_bin already exists, skipping."
+	fi
+
+done < "$sub_list"
+
+echo "Done"
