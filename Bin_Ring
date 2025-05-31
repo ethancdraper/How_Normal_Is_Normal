@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#SBATCH --mem=16G
+#SBATCH --time=1:00:00
+
+module load fsl/6.0.6
+
+sub_list="/well/miller/users/uai965/UKBB/Subjects_400/G"
+core_path="/well/miller/users/uai965/UKBB/Subjects_400"
+
+while read -r ID; do
+
+    M1="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_1.nii.gz"
+    M2="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_2.nii.gz"
+    M3="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_3.nii.gz"
+    M4="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_4.nii.gz"
+    M5="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_5.nii.gz"
+
+    M1_b="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_1_b.nii.gz"
+    M2_b="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_2_b.nii.gz"
+    M3_b="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_3_b.nii.gz"
+    M4_b="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_4_b.nii.gz"
+    M5_b="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_5_b.nii.gz"
+
+    #Bin
+    fslmaths "${M1}" -bin "${M1_b}"
+    fslmaths "${M2}" -bin "${M2_b}"
+    fslmaths "${M3}" -bin "${M3_b}"
+    fslmaths "${M4}" -bin "${M4_b}"
+    fslmaths "${M5}" -bin "${M5_b}"
+
+    echo "NAWM at 1mm–5mm has been binarized for ${ID}"
+
+done < "$sub_list"
+
+echo "Done"
