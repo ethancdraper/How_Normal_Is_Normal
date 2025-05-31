@@ -1,0 +1,32 @@
+#!/bin/bash
+
+#SBATCH --mem=16G
+#SBATCH --time=1:00:00
+
+module load fsl/6.0.6
+
+sub_list="/well/miller/users/uai965/UKBB/Subjects_400/G"
+core_path="/well/miller/users/uai965/UKBB/Subjects_400"
+ROI_list="/well/miller/users/uai965/UKBB/Subjects_100/XTRACT_List"
+Output="$core_path/ROI_AD_Output.csv"
+
+echo "ID,ROI,Mean_AD_ROI" > $Output
+
+while read -r ID; do
+
+	if [[ -f "$core_path/${ID}/dMRI/dMRI/dMRInative_viaT1_to_MNI_warp.nii.gz" ]]; then
+		AD="${core_path}/${ID}/dMRI/dMRI/dti_L1.nii.gz"
+	        while read -r ROI; do
+		ROI_file="$core_path/${ID}/dMRI/autoptx_preproc/tracts/${ROI}/tracts/tractsNorm_001_bin_in_dif.nii.gz"
+		echo "${ID},${ROI},$(fslstats ${AD} -k ${ROI_file} -M)" >> $Output
+		done < "$ROI_list"
+		echo "AD has been extracted for ${ID}"
+
+	else
+		echo "${ID} warp not found, skipping"
+	fi
+
+
+done < "$sub_list"
+
+echo "Done"
