@@ -1,0 +1,26 @@
+#!/bin/bash
+
+module load fsl/6.0.6
+
+core_path="/path/to/data"
+sub_list="/path/to/data/sub_list"
+
+NAWM_Output="/path/to/data/NAWM_FA_Output.csv"
+WMH_Output="/path/to/data/WMH_FA_Output.csv"
+
+echo "ID,Mean_FA_NAWM" > $NAWM_Output
+echo "ID,Mean_FA_WMH" > $WMH_Output
+
+while read -r ID; do
+
+	FA="${core_path}/${ID}/dMRI/dMRI/dti_FA.nii.gz"
+        WMH_NO_DIF_3_bin="${core_path}/${ID}/T2_FLAIR/lesions/output/final_mask_no_diff_3_bin.nii.gz"
+	NAWM_bin="${core_path}/${ID}/T2_FLAIR/lesions/output/NAWM_bin.nii.gz"
+
+	echo "${ID},$(fslstats ${FA} -k ${NAWM_bin} -M)" >> $NAWM_Output
+	echo "${ID},$(fslstats ${FA} -k ${WMH_NO_DIF_3_bin} -M)" >> $WMH_Output
+
+	echo "WMH FA and NAWM FA have been extracted for ${ID}"
+done < "$sub_list"
+
+echo "Done"
