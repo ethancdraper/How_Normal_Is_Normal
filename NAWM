@@ -2,8 +2,8 @@
 
 module load fsl/6.0.6
 
-core_path="/well/miller/users/uai965/UKBB/Subjects_400" 
-sub_list="${core_path}/G"
+core_path="/path/to/data" 
+sub_list="/path/to/data/sub_list"
 
 while read -r ID; do
 
@@ -20,17 +20,11 @@ while read -r ID; do
 	if [ ! -d "$NAWM_bin" ]; then
 
 		flirt -in "${ERO_WM_Mask}" -ref "${NO_DIF}" -out "${ERO_WM_NO_DIF}" -omat "${ERO_WM_NO_DIF_M}" -dof 6
-
 		fslmaths "${ERO_WM_NO_DIF}" -thr 0.5 "${ERO_WM_NO_DIF_05}"
-
 		fslmaths "${WMH_NO_DIF_3}" -bin "${WMH_NO_DIF_3_bin}"
-
 		fslmaths "${ERO_WM_NO_DIF_05}" -sub "${WMH_NO_DIF_3_bin}" "${NAWM}"
-
 		fslmaths "${NAWM}" -bin "${NAWM_bin}"
-
 		echo "WMH has been moved and thresholded for ${ID}"
-
 	else
 		echo "$NAWM_bin already exists, skipping."
 	fi
