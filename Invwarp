@@ -2,8 +2,8 @@
 
 module load fsl/6.0.6
 
-core_path="/well/miller/users/uai965/UKBB/Subjects_400"
-sub_list="$core_path/G"
+core_path="/path/to/data"
+sub_list=/path/to/data/sub_list"
 
 while read -r ID; do
 
