@@ -1,0 +1,34 @@
+#!/bin/bash
+
+module load fsl/6.0.6
+
+core_path="/path/to/data"
+sub_list="/path/to/data/sub_list"
+NAWM_Output="$core_path/DTI/NAWM_FA_Output_1_5.csv"
+
+echo "ID,FA_1,FA_2,FA_3,FA_4,FA_5" > "$NAWM_Output"
+
+while read -r ID; do
+
+    M1_0="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_1_0.nii.gz"
+    M2_1="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_2_1.nii.gz"
+    M3_12="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_3_12.nii.gz"
+    M4_123="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_4_123.nii.gz"
+    M5_1234="${core_path}/${ID}/T2_FLAIR/lesions/output/lesion_mask_sphere_5_1234.nii.gz"
+
+    FA="${core_path}/${ID}/dMRI/dMRI/dti_FA.nii.gz"
+
+    # Extract mean AD values
+    FA_1=$(fslstats "${FA}" -k "${M1_0}" -M)
+    FA_2=$(fslstats "${FA}" -k "${M2_1}" -M)
+    FA_3=$(fslstats "${FA}" -k "${M3_12}" -M)
+    FA_4=$(fslstats "${FA}" -k "${M4_123}" -M)
+    FA_5=$(fslstats "${FA}" -k "${M5_1234}" -M)
+
+    echo "${ID},${FA_1},${FA_2},${FA_3},${FA_4},${FA_5}" >> "$NAWM_Output"
+
+    echo "NAWM FA at 1mm–5mm has been extracted for ${ID}"
+
+done < "$sub_list"
+
+echo "Done"
