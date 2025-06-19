@@ -2,8 +2,8 @@
 
 module load fsl/6.0.6
 
-core_path="/well/miller/users/uai965/UKBB/Subjects_400"
-sub_list="$core_path/G1_2"
+core_path="/path/to/data"
+sub_list="/path/to/data/sub_list"
 no_les_vol="${core_path}/NAWM_volumes_12.csv"
 
 echo "SubjectID,ROI,NAWM_Volume_mm3" > "$no_les_vol"
