@@ -1,0 +1,28 @@
+#!/bin/bash
+
+module load fsl/6.0.6
+
+core_path="/path/to/data"
+sub_list="/path/to/data/sub_list"
+ROI_list="/path/to/data/XTRACT_List"
+Output="/path/to/data/ROI_FA_Output.csv"
+
+echo "ID,ROI,Mean_FA_ROI" > $Output
+
+while read -r ID; do
+
+	if [[ -f "$core_path/${ID}/dMRI/dMRI/dMRInative_viaT1_to_MNI_warp.nii.gz" ]]; then
+		FA="${core_path}/${ID}/dMRI/dMRI/dti_FA.nii.gz"
+	        while read -r ROI; do
+		ROI_file="$core_path/${ID}/dMRI/autoptx_preproc/tracts/${ROI}/tracts/tractsNorm_001_bin_in_dif.nii.gz"
+		echo "${ID},${ROI},$(fslstats ${FA} -k ${ROI_file} -M)" >> $Output
+		done < "$ROI_list"
+		echo "FA has been extracted for ${ID}"
+
+	else
+		echo "${ID} warp not found, skipping"
+	fi
+
+done < "$sub_list"
+
+echo "Done"
